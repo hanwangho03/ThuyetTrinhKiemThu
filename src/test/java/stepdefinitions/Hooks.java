@@ -11,22 +11,22 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 public class Hooks {
     public static WebDriver driver;
+
     @Before
-    public void Before()
-    {
-        WebDriverManager.chromedriver().setup();
+    public void setUp() {
+        WebDriverManager.chromedriver().setup(); // Tự động tải phiên bản ChromeDriver phù hợp
         driver = new ChromeDriver();
-        driver.manage().window().maximize();
+        driver.manage().window().maximize(); // Phóng to cửa sổ trình duyệt
     }
 
     @After
-    public void After(Scenario scenario)
-    {
-        //if(scenario.isFailed())
-        //{
-            final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-            scenario.attach(screenshot, "image/png", "screenshot");
-        //}
-        driver.quit();
+    public void tearDown(Scenario scenario) {
+        if (driver != null) { // Kiểm tra null để tránh NullPointerException
+            if (scenario.isFailed()) { // Chỉ chụp ảnh màn hình khi kịch bản thất bại
+                final byte[] screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+                scenario.attach(screenshot, "image/png", "screenshot");
+            }
+            driver.quit(); // Đóng trình duyệt
+        }
     }
 }
